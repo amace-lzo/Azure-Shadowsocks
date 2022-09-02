@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerGroups_shadowsocks_name": {
+            "defaultValue": "shadowsocks-ea",
+            "type": "String"
+        },
+        "password":{
+            "defaultValue": "Change to your password",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2021-10-01",
+            "name": "[parameters('containerGroups_shadowsocks_name')]",
+            "location": "eastasia",
+            "properties": {
+                "sku": "Standard",
+                "containers": [
+                    {
+                        "name": "[parameters('containerGroups_shadowsocks_name')]",
+                        "properties": {
+                            "image": "oddrationale/docker-shadowsocks",
+                            "command": [
+                                "/usr/local/bin/ssserver",
+                                "-p",
+                                "8080",
+                                "-k",
+                                "[parameters('password')]"
+                            ],
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 8080
+                                }
+                            ],
+                            "environmentVariables": [],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "initContainers": [],
+                "restartPolicy": "Always",
+                "ipAddress": {
+                    "ports": [
+                        {
+                            "protocol": "TCP",
+                            "port": 8080
+                        }
+                    ],
+                    "type": "Public"
+                },
+                "osType": "Linux"
+            }
+        }
+    ]
+}
